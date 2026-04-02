@@ -1,0 +1,30 @@
+# Dependabot is GitHub's automated dependency update bot.
+# It scans your dependencies on a schedule and opens PRs when
+# updates are available — so you never have to manually check
+# whether your actions or npm packages have security patches.
+version: 2
+
+updates:
+  # Monitor GitHub Actions versions in your workflows.
+  # This is what will catch future SonarQube scanner vulnerabilities
+  # automatically, rather than you discovering them by reading warnings.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    # Group all action updates into a single PR rather than one PR
+    # per action — keeps your PR list clean.
+    groups:
+      github-actions:
+        patterns: ['*']
+
+  # Monitor npm dependencies across the entire monorepo.
+  # Each apps/* directory is a separate package, so we point
+  # Dependabot at each one individually.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      npm-dependencies:
+        patterns: ['*']
