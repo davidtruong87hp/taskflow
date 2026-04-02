@@ -1,0 +1,31 @@
+# Dependencies — never commit these
+node_modules/
+.pnpm-store/
+
+# Build outputs — these are generated, not authored
+dist/
+build/
+
+# Environment files — secrets never go in git
+.env
+.env.local
+.env.*.local
+
+# NestJS specific
+*.js.map
+
+# Editor noise
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Test coverage reports (generated artifacts)
+coverage/
+
+# SonarCloud scanner cache (we'll add this in Phase 2)
+.scannerwork/
