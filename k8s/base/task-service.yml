@@ -1,0 +1,72 @@
+# ─── Deployment ──────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-service
+  labels:
+    app: task-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-service
+  template:
+    metadata:
+      labels:
+        app: task-service
+        tier: backend
+    spec:
+      containers:
+        - name: task-service
+          image: taskflow/task-service
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4001
+          envFrom:
+            - configMapRef:
+                name: task-service-config
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '256Mi'
+              cpu: '250m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+# ─── ConfigMap ───────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-service-config
+data:
+  PORT: '4001'
+  NODE_ENV: development
+
+---
+# ─── Service ─────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-service
+spec:
+  type: ClusterIP
+  selector:
+    app: task-service
+  ports:
+    - protocol: TCP
+      port: 4001
+      targetPort: 4001

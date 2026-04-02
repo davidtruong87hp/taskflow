@@ -1,0 +1,10 @@
+# .dockerignore — at the repo root
+node_modules/
+dist/
+.git/
+.github/
+coverage/
+*.md
+.env
+.env.*
+!.env.example

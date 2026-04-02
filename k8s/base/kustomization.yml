@@ -1,0 +1,9 @@
+# This file tells Kustomize which resources belong to the base.
+# Running "kubectl apply -k k8s/base" will apply all three files.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - api-gateway.yml
+  - task-service.yml
+  - user-service.yml

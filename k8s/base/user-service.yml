@@ -1,0 +1,97 @@
+# ─── Deployment ──────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  labels:
+    app: user-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+        tier: backend
+    spec:
+      containers:
+        - name: user-service
+
+          # In base, we use a placeholder image name.
+          # The overlay for each environment will substitute the real
+          # image tag (including the git SHA) at deploy time.
+          image: taskflow/user-service
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4002
+
+          # Environment variables injected from a ConfigMap.
+          # The container gets these as regular process.env variables —
+          # exactly what our NestJS ConfigService reads.
+          envFrom:
+            - configMapRef:
+                name: user-service-config
+
+          # Resource requests and limits are critical in Kubernetes.
+          # "requests" is what Kubernetes reserves on a node for this container.
+          # "limits" is the maximum it's allowed to use before being throttled/killed.
+          # Without these, a runaway container could consume all node resources.
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '256Mi'
+              cpu: '250m'
+
+          # Liveness probe: if this fails, Kubernetes kills and restarts the Pod.
+          # It answers: "is this container alive and not stuck?"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4002
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          # Readiness probe: if this fails, Kubernetes stops sending traffic here.
+          # It answers: "is this container ready to serve requests?"
+          # A Pod can be alive but not yet ready (e.g. still warming up a cache).
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+# ─── ConfigMap ───────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+data:
+  PORT: '4002'
+  NODE_ENV: development
+
+---
+# ─── Service ─────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  # ClusterIP means this Service is only reachable from within the cluster.
+  # api-gateway can reach user-service, but nothing from outside the cluster can.
+  # This is the right choice for internal microservices.
+  type: ClusterIP
+  selector:
+    app: user-service
+  ports:
+    - protocol: TCP
+      # port: what other services use to reach this Service
+      port: 4002
+      # targetPort: what port the actual container is listening on
+      targetPort: 4002

@@ -29,3 +29,5 @@ coverage/
 
 # SonarCloud scanner cache (we'll add this in Phase 2)
 .scannerwork/
+
+k8s/overlays/dev/kustomization.yaml
