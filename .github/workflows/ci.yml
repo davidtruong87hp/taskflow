@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci-api-gateway:
+    name: CI - api-gateway
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      # Cache node_modules across runs.
+      # This is a crucial optimization. Without caching, every CI run
+      # downloads and installs ALL dependencies from scratch — which can
+      # take 2-3 minutes. With caching, if your pnpm-lock.yaml hasn't
+      # changed, the cache is restored in seconds instead.
+      # The cache key includes a hash of pnpm-lock.yaml — so whenever
+      # dependencies change, the cache is automatically invalidated.
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # Install dependencies.
+      # --frozen-lockfile is critical in CI — it means pnpm will FAIL
+      # if the lockfile is out of sync with package.json, rather than
+      # silently updating it. This prevents "it worked in CI but not
+      # locally" bugs caused by dependency version drift.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Run ESLint on the specific service.
+      # The --filter flag targets only api-gateway, not all services.
+      # Each service's job lints itself — they don't lint each other.
+      - name: Lint
+        run: pnpm --filter api-gateway run lint
+
+      # Run tests and generate a coverage report.
+      # The coverage report is what SonarCloud reads to show you which
+      # lines of your code are exercised by tests and which are not.
+      - name: Test
+        run: pnpm --filter api-gateway run test:cov
+
+  ci-user-service:
+    name: CI — user-service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: pnpm/action-setup@v4
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm --filter user-service run lint
+      - name: Test
+        run: pnpm --filter user-service run test:cov
+
+  ci-task-service:
+    name: CI — task-service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: pnpm/action-setup@v4
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm --filter task-service run lint
+      - name: Test
+        run: pnpm --filter task-service run test:cov
+
+  # The SonarCloud job runs AFTER all three service jobs pass.
+  # The "needs" keyword expresses this dependency — if any of the
+  # three CI jobs fail, this job never runs. This is intentional:
+  # there's no point scanning code quality if the code doesn't even lint.
+  sonarcloud:
+    name: SonarCloud scan
+    runs-on: ubuntu-latest
+    needs: [ci-api-gateway, ci-user-service, ci-task-service]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0 fetches the FULL git history, not just the latest commit.
+          # SonarCloud needs this to accurately detect new issues vs existing ones,
+          # and to do proper blame analysis for tracking who introduced what.
+          fetch-depth: 0
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
