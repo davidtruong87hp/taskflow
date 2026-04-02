@@ -28,3 +28,4 @@ updates:
     groups:
       npm-dependencies:
         patterns: ['*']
+        update-types: ['minor', 'patch']
