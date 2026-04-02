@@ -15,6 +15,14 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
 
+  // Tell ESLint which global variables legitimately exist.
+  // Without this, it flags Node.js built-ins like 'module',
+  // 'require', and '__dirname' as undefined variables.
+  env: {
+    node: true,      // enables Node.js globals: module, require, __dirname, etc.
+    es2022: true,    // enables modern JS globals like Promise, Map, Set, etc.
+  },
+
   rules: {
     '@typescript-eslint/no-unused-vars': ['warn', {
       argsIgnorePattern: '^_',
