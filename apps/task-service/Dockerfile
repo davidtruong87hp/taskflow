@@ -13,14 +13,12 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
-# Copy only the files needed to install dependencies first.
-# This is a critical Docker optimization: if package.json and 
-# pnpm-lock.yaml haven't changed, Docker reuses the cached 
-# node_modules layer and skips the expensive install step entirely.
-# Copying source code first would bust this cache on every code change.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/task-service/package.json ./apps/task-service/
 COPY packages/ ./packages/
+
+COPY apps/api-gateway/package.json ./apps/api-gateway/
+COPY apps/user-service/package.json ./apps/user-service/
+COPY apps/task-service/package.json ./apps/task-service/
 
 # Install ALL dependencies including devDependencies —
 # we need the TypeScript compiler and NestJS CLI in this stage.
@@ -53,9 +51,13 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/ ./packages/
+
+COPY apps/api-gateway/package.json ./apps/api-gateway/
+COPY apps/user-service/package.json ./apps/user-service/
 COPY apps/task-service/package.json ./apps/task-service/
 
-# Install ONLY production dependencies — no devDependencies.
+# Install ONLY production dependencies
 # This is what makes the final image lean.
 RUN pnpm install --frozen-lockfile --prod
 

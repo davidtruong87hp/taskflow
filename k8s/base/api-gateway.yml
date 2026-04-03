@@ -54,7 +54,12 @@ metadata:
   name: api-gateway-config
 data:
   PORT: '4000'
-  NODE_ENV: development
+  NODE_ENV: 'development'
+  # These URLs use Kubernetes's internal DNS — the service name resolves
+  # to the ClusterIP of each service automatically.
+  # This is the magic of Kubernetes service discovery.
+  TASK_SERVICE_URL: 'http://task-service:4001'
+  USER_SERVICE_URL: 'http://user-service:4002'
 
 ---
 # ─── Service ─────────────────────────────────────────────────────────────────

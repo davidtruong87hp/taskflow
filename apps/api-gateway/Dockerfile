@@ -19,8 +19,16 @@ WORKDIR /app
 # node_modules layer and skips the expensive install step entirely.
 # Copying source code first would bust this cache on every code change.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/api-gateway/package.json ./apps/api-gateway/
 COPY packages/ ./packages/
+
+# Copy ALL service package.json files, not just the one being built.
+# pnpm needs the complete workspace picture to correctly resolve
+# which packages get hoisted to root node_modules vs staying local.
+# Missing any service's package.json causes exactly this kind of
+# "cannot find module" error for packages installed in other services.
+COPY apps/api-gateway/package.json ./apps/api-gateway/
+COPY apps/user-service/package.json ./apps/user-service/
+COPY apps/task-service/package.json ./apps/task-service/
 
 # Install ALL dependencies including devDependencies —
 # we need the TypeScript compiler and NestJS CLI in this stage.
@@ -53,7 +61,11 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/ ./packages/
+
 COPY apps/api-gateway/package.json ./apps/api-gateway/
+COPY apps/user-service/package.json ./apps/user-service/
+COPY apps/task-service/package.json ./apps/task-service/
 
 # Install ONLY production dependencies — no devDependencies.
 # This is what makes the final image lean.
