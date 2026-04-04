@@ -54,12 +54,24 @@ metadata:
   name: api-gateway-config
 data:
   PORT: '4000'
-  NODE_ENV: 'development'
+  NODE_ENV: 'production'
   # These URLs use Kubernetes's internal DNS — the service name resolves
   # to the ClusterIP of each service automatically.
   # This is the magic of Kubernetes service discovery.
   TASK_SERVICE_URL: 'http://task-service:4001'
   USER_SERVICE_URL: 'http://user-service:4002'
+  SERVICE_NAME: 'api-gateway' # (use appropriate name per service)
+  OTEL_SERVICE_NAME: 'api-gateway'
+  OTEL_EXPORTER_OTLP_ENDPOINT: 'grafana.monitoring.svc.cluster.local:4317'
+  OTEL_EXPORTER_OTLP_PROTOCOL: 'grpc'
+  # This tells the auto-instrumentation which libraries to instrument.
+  # http captures all inbound/outbound HTTP calls — the most important one
+  # for seeing inter-service traces. nestjs-core adds NestJS-specific spans.
+  OTEL_NODE_ENABLED_INSTRUMENTATIONS: 'http,express,nestjs-core'
+  # This is the critical line — it tells Node.js to load the
+  # auto-instrumentation module before running any application code.
+  # Without this, all the OTEL_* variables above have no effect.
+  NODE_OPTIONS: '--require @opentelemetry/auto-instrumentations-node/register'
 
 ---
 # ─── Service ─────────────────────────────────────────────────────────────────

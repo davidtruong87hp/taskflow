@@ -4,10 +4,17 @@ set -e
 cp k8s/overlays/dev/kustomization.yaml.template \
    k8s/overlays/dev/kustomization.yaml
 
+echo "🔍 Checking minikube status..."
+if ! minikube status --format='{{.Host}}' | grep -q "Running"; then
+  echo "❌ Minikube is not running. Start it with: minikube start"
+  exit 1
+fi
+
 # Point Docker commands at minikube's internal daemon.
 # This is the key line that makes everything work — images built here
 # are immediately available to Kubernetes without any registry push.
 eval $(minikube docker-env)
+echo "✅ Connected to minikube Docker daemon"
 
 TAG=$(date +%Y%m%d%H%M%S)
 echo "🔨 Building images with tag: $TAG"

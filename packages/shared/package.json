@@ -1,0 +1,10 @@
+{
+  "name": "@taskflow/shared",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}
