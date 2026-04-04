@@ -18,6 +18,12 @@ data:
         isDefault: true   # This makes Prometheus the default datasource in Explore
         editable: false   # Prevent accidental changes through the UI
 
+      - name: Tempo
+        type: tempo
+        uid: tempo
+        url: http://tempo.monitoring.svc.cluster.local:3200
+        editable: false
+
 ---
 apiVersion: apps/v1
 kind: Deployment

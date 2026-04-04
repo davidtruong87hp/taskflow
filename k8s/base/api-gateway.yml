@@ -62,7 +62,7 @@ data:
   USER_SERVICE_URL: 'http://user-service:4002'
   SERVICE_NAME: 'api-gateway' # (use appropriate name per service)
   OTEL_SERVICE_NAME: 'api-gateway'
-  OTEL_EXPORTER_OTLP_ENDPOINT: 'http://grafana.monitoring.svc.cluster.local:4318'
+  OTEL_EXPORTER_OTLP_ENDPOINT: 'http://tempo.monitoring.svc.cluster.local:4318'
   OTEL_EXPORTER_OTLP_PROTOCOL: 'http/protobuf'
   # This tells the auto-instrumentation which libraries to instrument.
   # http captures all inbound/outbound HTTP calls — the most important one
