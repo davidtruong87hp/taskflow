@@ -1,0 +1,103 @@
+# The scrape configuration — this is the heart of Prometheus.
+# Changing this ConfigMap and restarting the pod is all you need
+# to add or remove scrape targets.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      # Prometheus scraping itself — useful for monitoring the monitor
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      # Your three NestJS services
+      - job_name: 'api-gateway'
+        static_configs:
+          - targets: ['api-gateway.taskflow-dev.svc.cluster.local:4000']
+
+      - job_name: 'task-service'
+        static_configs:
+          - targets: ['task-service.taskflow-dev.svc.cluster.local:4001']
+
+      - job_name: 'user-service'
+        static_configs:
+          - targets: ['user-service.taskflow-dev.svc.cluster.local:4002']
+
+---
+# The Prometheus Deployment — one replica is fine for a dev environment.
+# In production you'd run Prometheus with persistent storage and possibly
+# high-availability replicas, but for learning purposes this is perfect.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.51.0
+          args:
+            # Tell Prometheus exactly where its config lives.
+            # This is the flag that was missing from otel-lgtm's opaque setup.
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            # How long to keep data — 15 days is plenty for dev
+            - '--storage.tsdb.retention.time=15d'
+            # Enable the web UI and API
+            - '--web.enable-lifecycle'
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: storage
+              mountPath: /prometheus
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+      volumes:
+        # Mount the ConfigMap as a directory — Prometheus reads the whole
+        # /etc/prometheus directory, so we don't need subPath here
+        - name: config
+          configMap:
+            name: prometheus-config
+        # EmptyDir is ephemeral storage that lives as long as the pod.
+        # Data is lost on pod restart, which is fine for dev but not production.
+        # In production environments you'd replace this with a PersistentVolumeClaim.
+        - name: storage
+          emptyDir: {}
+
+---
+# The Service — exposes Prometheus within the cluster so Grafana can query it
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - name: web
+      port: 9090
+      targetPort: 9090

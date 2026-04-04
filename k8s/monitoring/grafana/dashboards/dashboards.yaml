@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provider
+  namespace: monitoring
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        # This is the path inside the Grafana container where dashboard
+        # JSON files will be mounted. Grafana watches this directory
+        # and loads any .json files it finds there.
+        folder: 'Taskflow'
+        type: file
+        disableDeletion: true  # Prevent deletion through the UI
+        editable: false        # Make dashboards read-only in the UI
+        options:
+          path: /etc/grafana/provisioning/dashboards
