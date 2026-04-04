@@ -7,3 +7,4 @@ resources:
   - api-gateway.yml
   - task-service.yml
   - user-service.yml
+  - ingress.yml
