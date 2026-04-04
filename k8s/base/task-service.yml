@@ -57,8 +57,8 @@ data:
   NODE_ENV: 'production'
   SERVICE_NAME: 'task-service'
   OTEL_SERVICE_NAME: 'task-service'
-  OTEL_EXPORTER_OTLP_ENDPOINT: 'grafana.monitoring.svc.cluster.local:4317'
-  OTEL_EXPORTER_OTLP_PROTOCOL: 'grpc'
+  OTEL_EXPORTER_OTLP_ENDPOINT: 'http://grafana.monitoring.svc.cluster.local:4318'
+  OTEL_EXPORTER_OTLP_PROTOCOL: 'http/protobuf'
   OTEL_NODE_ENABLED_INSTRUMENTATIONS: 'http,express,nestjs-core'
   NODE_OPTIONS: '--require @opentelemetry/auto-instrumentations-node/register'
 
