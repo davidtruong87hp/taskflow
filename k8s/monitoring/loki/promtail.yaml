@@ -56,17 +56,22 @@ data:
         pipeline_stages:
           - cri: {}
           # Extract the app name from the log file path itself
-          - regex:
-              expression: '/var/log/pods/taskflow-dev_(?P<app>[a-z-]+)-.*'
-              source: filename
+          - json:
+              expressions:
+                # Extract these fields from your app's JSON log output
+                # and store them as Loki stream labels or indexed fields.
+                traceId: traceId
+                level: level
+                context: context
           - labels:
-              app:
-          # Strip ANSI color codes that NestJS adds to its console output.
-          # These show up as \u001b[32m etc. and make logs hard to read.
-          - replace:
-              expression: '(\x1b\[[0-9;]*m)'
-              replace: ''
-              source: log
+              # Promote traceId to a Loki label so it becomes directly
+              # queryable — you can run {traceId="abc123"} in LogQL.
+              # Be careful about cardinality here — traceId has very high
+              # cardinality (unique per request), which is normally bad for
+              # Loki labels. But for a dev environment it's fine, and it
+              # makes correlation much easier.
+              level:
+              traceId:
 
 ---
 apiVersion: apps/v1

@@ -36,9 +36,10 @@ data:
           # set this up properly when we add structured logging.
           derivedFields:
             - name: TraceID
-              matcherRegex: "traceId=(\\w+)"
-              url: "$${__value.raw}"
+              matcherRegex: '"traceId":"(\w+)"'
+              url: '${__value.raw}'
               datasourceUid: tempo
+              urlDisplayLabel: "View Trace in Tempo"
 
 ---
 apiVersion: apps/v1
