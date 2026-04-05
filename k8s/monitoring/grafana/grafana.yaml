@@ -24,6 +24,22 @@ data:
         url: http://tempo.monitoring.svc.cluster.local:3200
         editable: false
 
+      - name: Loki
+        type: loki
+        uid: loki
+        url: http://loki.monitoring.svc.cluster.local:3100
+        editable: false
+        jsonData:
+          # This tells Grafana to look for a traceID field in log lines
+          # and create a clickable link to the corresponding Tempo trace.
+          # The field name must match what your NestJS app logs — we'll
+          # set this up properly when we add structured logging.
+          derivedFields:
+            - name: TraceID
+              matcherRegex: "traceId=(\\w+)"
+              url: "$${__value.raw}"
+              datasourceUid: tempo
+
 ---
 apiVersion: apps/v1
 kind: Deployment
