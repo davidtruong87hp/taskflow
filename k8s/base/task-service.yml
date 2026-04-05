@@ -26,6 +26,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: task-service-config
+            - secretRef:
+                name: task-service-secret
           resources:
             requests:
               memory: '128Mi'

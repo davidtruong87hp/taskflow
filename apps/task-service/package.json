@@ -32,6 +32,7 @@
     "@opentelemetry/resources": "^2.6.1",
     "@opentelemetry/sdk-metrics": "^2.6.1",
     "@opentelemetry/sdk-node": "^0.214.0",
+    "@prisma/client": "5.22.0",
     "@taskflow/shared": "workspace:*",
     "@willsoto/nestjs-prometheus": "^6.1.0",
     "nest-winston": "^1.10.2",

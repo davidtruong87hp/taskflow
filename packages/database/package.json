@@ -1,0 +1,25 @@
+{
+  "name": "@taskflow/database",
+  "version": "0.0.1",
+  "description": "Shared Prisma client for Taskflow services",
+  "main": "generated/client/index.js",
+  "types": "generated/client/index.d.ts",
+  "private": true,
+  "scripts": {
+    "generate": "prisma generate --schema=prisma/schema.prisma",
+    "migrate:dev": "prisma migrate dev --schema=prisma/schema.prisma",
+    "migrate:deploy": "prisma migrate deploy --schema=prisma/schema.prisma",
+    "studio": "prisma studio --schema=prisma/schema.prisma"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.37",
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2"
+  }
+}

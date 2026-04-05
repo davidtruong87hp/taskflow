@@ -36,5 +36,10 @@
     "**/*.{json,md,yml,yaml,Dockerfile}": [
       "pnpm exec prettier --write"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "prisma": "5.22.0"
+    }
   }
 }

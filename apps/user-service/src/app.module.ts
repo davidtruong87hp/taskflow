@@ -9,6 +9,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { traceContextFormat } from './logger';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
@@ -42,7 +43,7 @@ import { traceContextFormat } from './logger';
     }),
   ],
   controllers: [AppController, HealthController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

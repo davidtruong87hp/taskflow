@@ -34,6 +34,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: user-service-config
+            - secretRef:
+                name: user-service-secret
 
           # Resource requests and limits are critical in Kubernetes.
           # "requests" is what Kubernetes reserves on a node for this container.

@@ -9,14 +9,14 @@ export class AppController {
   // In a real app this would query a database — for now we return
   // hardcoded data so we can focus on the infrastructure wiring.
   @Get()
-  findAll() {
+  async findAll() {
     return this.appService.findAll();
   }
 
   // Returns a single user by ID.
   // The @Param decorator extracts the :id segment from the URL path.
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.appService.findOne(id);
   }
 }

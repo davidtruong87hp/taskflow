@@ -8,3 +8,7 @@ resources:
   - task-service.yml
   - user-service.yml
   - ingress.yml
+  - postgres/secret.yaml
+  - postgres/postgres.yaml
+  - postgres/user-service-secret.yaml
+  - postgres/task-service-secret.yaml

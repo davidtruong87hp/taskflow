@@ -1,26 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
-const TASKS = [
-  { id: '1', title: 'Set up CI pipeline', userId: '1', status: 'done' },
-  { id: '2', title: 'Write K8s manifests', userId: '1', status: 'done' },
-  { id: '3', title: 'Add OpenTelemetry', userId: '2', status: 'in-progress' },
-];
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class AppService {
-  findAll() {
-    return { data: TASKS, total: TASKS.length };
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findAll() {
+    const data = await this.prisma.task.findMany();
+    return { data, total: data.length };
   }
 
-  findOne(id: string) {
-    const task = TASKS.find((t) => t.id === id);
+  async findOne(id: string) {
+    const task = await this.prisma.task.findUnique({
+      where: { id: parseInt(id) },
+    });
     if (!task) {
       throw new NotFoundException(`Task with id ${id} not found`);
     }
     return task;
   }
 
-  findByUser(userId: string) {
-    return { data: TASKS.filter((t) => t.userId === userId) };
+  async findByUser(userId: string) {
+    const data = await this.prisma.task.findMany({
+      where: { userId: parseInt(userId) },
+    });
+    return { data };
   }
 }

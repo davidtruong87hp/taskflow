@@ -23,6 +23,7 @@ echo "🔨 Building images with tag: $TAG"
 for SERVICE in api-gateway user-service task-service; do
   docker build \
     --platform linux/amd64 \
+    --network=host \
     -f apps/$SERVICE/Dockerfile \
     -t taskflow/$SERVICE:$TAG .
   echo "✅ Built $SERVICE:$TAG"
@@ -42,5 +43,4 @@ kubectl rollout restart deployment/api-gateway -n taskflow-dev
 kubectl rollout restart deployment/user-service -n taskflow-dev
 kubectl rollout restart deployment/task-service -n taskflow-dev
 
-echo "✅ Watching pods..."
-kubectl get pods -n taskflow-dev -w
+echo "✅ Finished deploying to taskflow-dev"

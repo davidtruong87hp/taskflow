@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "target": "ES2021",
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "types": ["node"]
+  },
+  "include": ["src/**/*", "generated/**/*", "prisma/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

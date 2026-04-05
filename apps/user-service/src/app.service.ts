@@ -1,23 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
-// In a real service this would be injected database repositories.
-// We're using in-memory data to keep the focus on service communication.
-const USERS = [
-  { id: '1', name: 'Alice Nguyen', email: 'alice@taskflow.dev' },
-  { id: '2', name: 'Bob Tran', email: 'bob@taskflow.dev' },
-];
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class AppService {
-  findAll() {
-    return { data: USERS, total: USERS.length };
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findAll() {
+    const data = await this.prisma.user.findMany();
+    return { data, total: data.length };
   }
 
-  findOne(id: string) {
-    const user = USERS.find((u) => u.id === id);
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: parseInt(id) },
+    });
     if (!user) {
-      // NestJS's NotFoundException automatically produces a 404 response
-      // with a properly structured JSON error body — no manual work needed.
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
