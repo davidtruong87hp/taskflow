@@ -58,10 +58,10 @@ importers:
       '@opentelemetry/auto-instrumentations-node':
         specifier: ^0.72.0
         version: 0.72.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.6.1(@opentelemetry/api@1.9.1))
-      '@opentelemetry/exporter-metrics-otlp-grpc':
+      '@opentelemetry/exporter-metrics-otlp-http':
         specifier: ^0.214.0
         version: 0.214.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/exporter-trace-otlp-grpc':
+      '@opentelemetry/exporter-trace-otlp-http':
         specifier: ^0.214.0
         version: 0.214.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/resources':
@@ -185,10 +185,10 @@ importers:
       '@opentelemetry/auto-instrumentations-node':
         specifier: ^0.72.0
         version: 0.72.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.6.1(@opentelemetry/api@1.9.1))
-      '@opentelemetry/exporter-metrics-otlp-grpc':
+      '@opentelemetry/exporter-metrics-otlp-http':
         specifier: ^0.214.0
         version: 0.214.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/exporter-trace-otlp-grpc':
+      '@opentelemetry/exporter-trace-otlp-http':
         specifier: ^0.214.0
         version: 0.214.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/resources':
@@ -309,10 +309,10 @@ importers:
       '@opentelemetry/auto-instrumentations-node':
         specifier: ^0.72.0
         version: 0.72.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.6.1(@opentelemetry/api@1.9.1))
-      '@opentelemetry/exporter-metrics-otlp-grpc':
+      '@opentelemetry/exporter-metrics-otlp-http':
         specifier: ^0.214.0
         version: 0.214.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/exporter-trace-otlp-grpc':
+      '@opentelemetry/exporter-trace-otlp-http':
         specifier: ^0.214.0
         version: 0.214.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/resources':

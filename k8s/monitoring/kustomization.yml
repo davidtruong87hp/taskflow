@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - grafana/grafana.yaml
+  - grafana/ingress.yaml
+  - grafana/dashboards/dashboards.yaml
+  - grafana/dashboards/red-dashboard.yaml
+  - loki/loki.yaml
+  - loki/promtail.yaml
+  - prometheus/prometheus.yaml
+  - tempo/tempo.yaml

@@ -61,12 +61,7 @@ deploy: ## Build and deploy all application services to taskflow-dev
 	eval $$(minikube docker-env) && ./scripts/dev-deploy.sh
 
 deploy-monitoring: ## Deploy the full monitoring stack to the monitoring namespace
-	kubectl apply -f k8s/monitoring/prometheus/prometheus.yaml
-	kubectl apply -f k8s/monitoring/tempo/tempo.yaml
-	kubectl apply -f k8s/monitoring/loki/loki.yaml
-	kubectl apply -f k8s/monitoring/grafana/grafana.yaml
-	kubectl apply -f k8s/monitoring/grafana/dashboards/dashboards.yaml
-	kubectl apply -f k8s/monitoring/grafana/dashboards/red-dashboard.yaml
+	kubectl apply -k k8s/monitoring
 	@echo "✓ Monitoring stack deployed"
 
 deploy-all: setup deploy deploy-monitoring ## Fresh deployment of everything (use after minikube restart)
