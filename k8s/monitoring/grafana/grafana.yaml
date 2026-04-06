@@ -84,6 +84,15 @@ spec:
             - name: dashboard-red
               mountPath: /etc/grafana/provisioning/dashboards/red-dashboard.json
               subPath: red-dashboard.json
+            - name: dashboard-infra
+              mountPath: /etc/grafana/provisioning/dashboards/infra-dashboard.json
+              subPath: infra-dashboard.json
+            - name: dashboard-postgres
+              mountPath: /etc/grafana/provisioning/dashboards/postgres-dashboard.json
+              subPath: postgres-dashboard.json
+            - name: dashboard-redis
+              mountPath: /etc/grafana/provisioning/dashboards/redis-dashboard.json
+              subPath: redis-dashboard.json
             # EmptyDir for Grafana's SQLite database (stores dashboards, users, etc.)
             # Same tradeoff as Prometheus storage — fine for dev, use PVC in production.
             - name: storage
@@ -105,6 +114,15 @@ spec:
         - name: dashboard-red
           configMap:
             name: grafana-dashboard-red
+        - name: dashboard-infra
+          configMap:
+            name: grafana-dashboard-infra
+        - name: dashboard-postgres
+          configMap:
+            name: grafana-dashboard-postgres
+        - name: dashboard-redis
+          configMap:
+            name: grafana-dashboard-redis
         - name: storage
           emptyDir: {}
 

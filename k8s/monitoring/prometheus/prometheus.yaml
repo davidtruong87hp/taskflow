@@ -18,6 +18,33 @@ data:
         static_configs:
           - targets: ['localhost:9090']
 
+      - job_name: 'kube-state-metrics'
+        static_configs:
+          - targets: ['kube-state-metrics.monitoring.svc.cluster.local:8080']
+
+      - job_name: 'node-exporter'
+        static_configs:
+          - targets: ['node-exporter.monitoring.svc.cluster.local:9100']
+
+      - job_name: 'postgres-exporter'
+        static_configs:
+          - targets: ['postgres-exporter.monitoring.svc.cluster.local:9187']
+
+      - job_name: 'redis-exporter'
+        static_configs:
+          - targets: ['redis-exporter.monitoring.svc.cluster.local:9121']
+
+      - job_name: 'kubelet'
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+
       # Your three NestJS services
       - job_name: 'api-gateway'
         static_configs:

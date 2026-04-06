@@ -5,8 +5,35 @@ resources:
   - grafana/grafana.yaml
   - grafana/ingress.yaml
   - grafana/dashboards/dashboards.yaml
-  - grafana/dashboards/red-dashboard.yaml
   - loki/loki.yaml
   - loki/promtail.yaml
   - prometheus/prometheus.yaml
   - tempo/tempo.yaml
+  - exporters/kube-state-metrics.yaml
+  - exporters/node-exporter.yaml
+  - exporters/postgres-exporter.yaml
+  - exporters/redis-exporter.yaml
+
+configMapGenerator:
+  - name: grafana-dashboard-red
+    namespace: monitoring
+    files:
+      - grafana/dashboards/red-dashboard.json
+
+  - name: grafana-dashboard-infra
+    namespace: monitoring
+    files:
+      - grafana/dashboards/infra-dashboard.json
+
+  - name: grafana-dashboard-postgres
+    namespace: monitoring
+    files:
+      - grafana/dashboards/postgres-dashboard.json
+
+  - name: grafana-dashboard-redis
+    namespace: monitoring
+    files:
+      - grafana/dashboards/redis-dashboard.json
+
+generatorOptions:
+  disableNameSuffixHash: true
