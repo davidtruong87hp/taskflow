@@ -22,6 +22,7 @@ echo "🔨 Building images with tag: $TAG"
 # Build for amd64 — minikube's VM uses x86_64 even on Apple Silicon
 for SERVICE in api-gateway user-service task-service; do
   docker build \
+    --no-cache \
     --platform linux/amd64 \
     --network=host \
     -f apps/$SERVICE/Dockerfile \

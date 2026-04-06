@@ -26,6 +26,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: api-gateway-config
+            - secretRef:
+                name: api-gateway-secret
           resources:
             requests:
               memory: '128Mi'

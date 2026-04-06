@@ -12,3 +12,6 @@ resources:
   - postgres/postgres.yaml
   - postgres/user-service-secret.yaml
   - postgres/task-service-secret.yaml
+  - redis/secret.yaml
+  - redis/redis.yaml
+  - redis/api-gateway-secret.yaml

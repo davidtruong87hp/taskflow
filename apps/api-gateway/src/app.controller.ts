@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Logger } from '@nestjs/common';
 import { AppService } from './app.service';
+import { RedisService } from './redis.service';
 
 @Controller()
 export class AppController {
@@ -10,27 +11,58 @@ export class AppController {
   // JSON with trace IDs injected automatically.
   private readonly logger = new Logger(AppController.name);
 
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly redis: RedisService,
+  ) {}
 
   @Get('users')
-  getUsers() {
-    this.logger.log('Fetching all users');
-    return this.appService.getUsers();
+  async getUsers() {
+    const cached = await this.redis.get('users:all');
+
+    if (cached) {
+      this.logger.log('Cache hit: users:all');
+      return cached;
+    }
+    this.logger.log('Cache miss: fetching all users');
+
+    const result = await this.appService.getUsers();
+    await this.redis.set('users:all', result, 30);
+
+    return result;
   }
 
   @Get('users/:id')
-  getUser(@Param('id') id: string) {
-    return this.appService.getUser(id);
+  async getUser(@Param('id') id: string) {
+    const cached = await this.redis.get(`users:${id}`);
+    if (cached) return cached;
+
+    const result = await this.appService.getUser(id);
+    await this.redis.set(`users:${id}`, result, 30);
+
+    return result;
   }
 
   @Get('tasks')
-  getTasks() {
-    return this.appService.getTasks();
+  async getTasks() {
+    const cached = await this.redis.get('tasks:all');
+    if (cached) return cached;
+
+    const result = await this.appService.getTasks();
+    await this.redis.set('tasks:all', result, 30);
+
+    return result;
   }
 
   @Get('tasks/:id')
-  getTask(@Param('id') id: string) {
-    return this.appService.getTask(id);
+  async getTask(@Param('id') id: string) {
+    const cached = await this.redis.get(`tasks:${id}`);
+    if (cached) return cached;
+
+    const result = await this.appService.getTask(id);
+    await this.redis.set(`tasks:${id}`, result, 30);
+
+    return result;
   }
 
   // This is the showcase endpoint — one call, data from two services.
@@ -40,11 +72,18 @@ export class AppController {
     // traceContextFormat will find trace.getActiveSpan() returning
     // the current request's span, and inject its traceId into the
     // JSON log record automatically.
+    const cached = await this.redis.get(`users:${id}:with-tasks`);
+    if (cached) return cached;
+
     this.logger.log(`Fetching user ${id} with tasks`);
+
     const result = await this.appService.getUserWithTasks(id);
+    await this.redis.set(`users:${id}:with-tasks`, result, 30);
+
     this.logger.log(
       `Successfully fetched user ${id} with ${result.tasks?.length ?? 0} tasks`,
     );
+
     return result;
   }
 }
