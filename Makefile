@@ -51,6 +51,8 @@ stop: ## Stop minikube (preserves cluster state)
 setup: ## Create namespaces — run this on a fresh cluster before deploying
 	kubectl create namespace taskflow-dev --dry-run=client -o yaml | kubectl apply -f -
 	kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+	make create-monitoring-secrets
+
 	@echo "✓ Namespaces ready"
 
 # ============================================================
@@ -61,13 +63,12 @@ deploy: ## Build and deploy all application services to taskflow-dev
 	eval $$(minikube docker-env) && ./scripts/dev-deploy.sh
 
 deploy-monitoring: ## Deploy the full monitoring stack to the monitoring namespace
-	make create-monitoring-secrets
 	kubectl apply -k k8s/monitoring
 	@echo "✓ Monitoring stack deployed"
 
 deploy-all: setup deploy deploy-monitoring ## Fresh deployment of everything (use after minikube restart)
 	kubectl apply -f k8s/base/ingress.yml
-# 	kubectl apply -f k8s/monitoring/grafana/ingress.yaml
+	kubectl apply -f k8s/monitoring/grafana/ingress.yaml
 	@echo "✓ Full stack deployed"
 
 restart-services: ## Restart all application services (picks up ConfigMap changes)
