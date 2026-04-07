@@ -61,6 +61,7 @@ deploy: ## Build and deploy all application services to taskflow-dev
 	eval $$(minikube docker-env) && ./scripts/dev-deploy.sh
 
 deploy-monitoring: ## Deploy the full monitoring stack to the monitoring namespace
+	make create-monitoring-secrets
 	kubectl apply -k k8s/monitoring
 	@echo "✓ Monitoring stack deployed"
 
@@ -141,6 +142,16 @@ check-otel: ## Verify OTLP endpoint configuration in all services
 	@echo ""
 	@echo "=== user-service OTEL config ==="
 	kubectl exec -n taskflow-dev deployment/user-service -- env | grep OTEL
+
+# ============================================================
+# Secrets
+# ============================================================
+
+create-monitoring-secrets: ## Apply secrets from .env file
+	kubectl create secret generic alertmanager-secret \
+	  --from-literal=slack-webhook-url=$$(grep SLACK_WEBHOOK .env | cut -d= -f2) \
+	  -n monitoring \
+	  --dry-run=client -o yaml | kubectl apply -f -
 
 # ============================================================
 # Maintenance

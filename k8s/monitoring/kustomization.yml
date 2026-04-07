@@ -13,6 +13,8 @@ resources:
   - exporters/node-exporter.yaml
   - exporters/postgres-exporter.yaml
   - exporters/redis-exporter.yaml
+  - alertmanager/secret.yaml
+  - alertmanager/alertmanager.yaml
 
 configMapGenerator:
   - name: grafana-dashboard-red
