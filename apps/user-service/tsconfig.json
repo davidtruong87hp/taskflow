@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@taskflow/shared": ["../../packages/shared/src/index.ts"]
-    }
+    },
+    "types": ["jest", "node"]
   }
 }

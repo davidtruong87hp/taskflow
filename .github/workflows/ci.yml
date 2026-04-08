@@ -76,6 +76,8 @@ jobs:
             ${{ runner.os }}-pnpm-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter @taskflow/database run generate
       - name: Lint
         run: pnpm --filter user-service run lint
       - name: Test
@@ -99,6 +101,8 @@ jobs:
             ${{ runner.os }}-pnpm-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter @taskflow/database run generate
       - name: Lint
         run: pnpm --filter task-service run lint
       - name: Test
